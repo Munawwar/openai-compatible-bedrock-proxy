@@ -1,0 +1,17 @@
+{
+  "name": "bedrock-access-gateway",
+  "version": "1.0.0",
+  "description": "OpenAI-compatible RESTful APIs for Amazon Bedrock",
+  "scripts": {
+    "deploy": "cd cdk && npm run deploy",
+    "build": "cd cdk && npm run build",
+    "typecheck": "cd src && tsc && cd ../cdk && tsc"
+  },
+  "workspaces": [
+    "src",
+    "cdk"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "MIT-0"
+} 

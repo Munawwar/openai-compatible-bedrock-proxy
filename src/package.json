@@ -1,0 +1,16 @@
+{
+  "name": "bedrock-access-gateway-lambda",
+  "version": "1.0.0",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.0.0",
+    "@aws-sdk/client-secrets-manager": "^3.0.0",
+    "@aws-sdk/client-bedrock": "^3.0.0",
+    "lambda-stream": "^0.5.0",
+    "@aws-sdk/types": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+} 
