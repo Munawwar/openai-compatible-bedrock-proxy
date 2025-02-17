@@ -28,6 +28,8 @@ class BedrockProxyStack extends Stack {
       runtime: Runtime.NODEJS_22_X,
       memorySize: 1024,
       timeout: Duration.seconds(30),
+      // You can prevent any potential abuse of the API by not limiting concurrent execution
+      // reservedConcurrentExecutions: 10,
       environment: {
         API_KEY_SECRET_ARN: apiKeySecret.secretArn,
         DEFAULT_MODEL_ID: 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',

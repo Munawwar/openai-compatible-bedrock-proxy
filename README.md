@@ -1,10 +1,44 @@
-# AWS Bedrock Access Gateway
+#  Bedrock Access Gateway - Lambda URL Fork
 
 OpenAI-compatible RESTful APIs for Amazon Bedrock
 
 This is a port of AWS's code sample, but re-written from Python to JS without Docker, no ALB nor VPC, rather uses Lambda function URL (this saves costs) and uses CDK.
 
-### AWS resources that will be created
+## Overview
+
+Amazon Bedrock offers a wide range of foundation models (such as Claude 3 Opus/Sonnet/Haiku, Llama 2/3, Mistral/Mixtral,
+etc.) and a broad set of capabilities for you to build generative AI applications. Check the [Amazon Bedrock](https://aws.amazon.com/bedrock) landing page for additional information.
+
+Sometimes, you might have applications developed using OpenAI APIs or SDKs, and you want to experiment with Amazon Bedrock without modifying your codebase. Or you may simply wish to evaluate the capabilities of these foundation models in tools like AutoGen etc. Well, this repository allows you to access Amazon Bedrock models seamlessly through OpenAI APIs and SDKs, enabling you to test these models without code changes.
+
+If you find this GitHub repository useful, please consider giving it a free star ⭐ to show your appreciation and support for the project.
+
+**Features:**
+
+- [x] Support streaming response via server-sent events (SSE)
+- [x] Support Model APIs
+- [x] Support Chat Completion APIs
+- [x] Support Tool Call (**new**)
+- [x] Support Embedding API (**new**)
+- [x] Support Multimodal API (**new**)
+- [x] Support Cross-Region Inference (**new**)
+
+Please check [Usage Guide](./docs/Usage.md) for more details about how to use the new APIs.
+
+
+## Get Started
+
+### Prerequisites
+
+Please make sure you have met below prerequisites:
+
+- Access to Amazon Bedrock foundation models.
+
+> For more information on how to request model access, please refer to the [Amazon Bedrock User Guide](https://docs.aws.amazon.com/bedrock/latest/userguide/model-access.html) (Set Up > Model access)
+
+### Architecture
+
+Uses an Lambda function with Function URL (with streaming support) to proxy requests to the Bedrock API. API key is stored in Secrets Manager - lambda caches the secret in-memory till AWS decides to recycle the instance.
 
 The CDK stack creates:
 - Lambda function with Function URL
@@ -122,20 +156,32 @@ npm run typecheck -- --watch
 cd cdk && npm run synth
 ```
 
-### Troubleshooting
+### About Privacy
 
-1. **Function URL returns 403**
-   - Check if API key is set in Secrets Manager
-   - Verify API key format in request header
+This application does not collect any of your data. Furthermore, it does not log any requests or responses by default.
 
-2. **Streaming doesn't work**
-   - Ensure `invokeMode` is set to `RESPONSE_STREAM`
-   - Check if model supports streaming
+### Which regions are supported?
 
-3. **Type errors**
-   - Run `npm run typecheck` to see detailed errors
-   - Check JSDoc comments and types
+Generally speaking, all regions that Amazon Bedrock supports will also be supported, if not, please raise an issue in Github.
+
+Note that not all models are available in those regions.
+
+### Which models are supported?
+
+You can use the [Models API](./docs/Usage.md#models-api) to get/refresh a list of supported models in the current region.
+
+### Any performance sacrifice or latency increase by using the proxy APIs
+
+Comparing with the AWS SDK call, the referenced architecture will bring additional latency on response, you can try and test that on you own.
+
+### Any plan to support Bedrock custom models?
+
+Fine-tuned models and models with Provisioned Throughput are currently not supported. You can clone the repo and make the customization if needed.
+
+## Security
+
+See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
 ## License
 
-MIT-0
+This library is licensed under the MIT-0 License. See the LICENSE file.
