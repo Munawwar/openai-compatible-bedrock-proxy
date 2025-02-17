@@ -2,7 +2,7 @@
 
 OpenAI-compatible RESTful APIs for Amazon Bedrock
 
-This is a port of AWS's code sample, but re-written from Python to JS without Docker, no ALB (rather Lambda function UL) and with CDK.
+This is a port of AWS's code sample, but re-written from Python to JS without Docker, no ALB nor VPC, rather uses Lambda function URL (this saves costs) and uses CDK.
 
 ### AWS resources that will be created
 
@@ -16,7 +16,7 @@ The CDK stack creates:
 
 Prerequisites:
 ```sh
-npm install -g aws-cdk@2.178.2
+npm install -g aws-cdk@^2.178.2
 npm install
 ```
 
@@ -44,7 +44,7 @@ cdk deploy
 The deployment will output a Function URL. This is your API endpoint.
 
 Go to AWS Secrets Manager, find the secret named "BedrockProxyAPIKey" and retrieve secret - this is your API key.
-I recommend you change the secret to not have special characters (use more than 21 characters).
+I recommend you change the secret to not have special characters which get's annoying with curl requests (use 32 characters alphanumeric characters at least).
 
 ## Testing
 

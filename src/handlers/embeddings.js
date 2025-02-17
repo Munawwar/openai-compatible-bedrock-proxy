@@ -1,9 +1,29 @@
 // @ts-check
-const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
+const { getEmbeddingsModel } = require('../utils/bedrock');
 
-const client = new BedrockRuntimeClient();
 const DEFAULT_EMBEDDING_MODEL = process.env.DEFAULT_EMBEDDING_MODEL || 'cohere.embed-multilingual-v3';
 const DEBUG = process.env.DEBUG === 'true';
+
+/**
+ * @typedef {Object} EmbeddingData
+ * @property {string} object
+ * @property {number[] | Buffer} embedding
+ * @property {number} index
+ */
+
+/**
+ * @typedef {Object} EmbeddingsUsage
+ * @property {number} prompt_tokens
+ * @property {number} total_tokens
+ */
+
+/**
+ * @typedef {Object} EmbeddingsResponseBody
+ * @property {string} object
+ * @property {EmbeddingData[]} data
+ * @property {string} model
+ * @property {EmbeddingsUsage} usage
+ */
 
 /**
  * @typedef {Object} EmbeddingsRequest
@@ -13,59 +33,63 @@ const DEBUG = process.env.DEBUG === 'true';
  */
 
 /**
- * @typedef {Object} EmbeddingsResponse
- * @property {number[][]} embeddings
- * @property {Object} usage
- * @property {number} usage.input_tokens
- */
-
-/**
  * @param {import('aws-lambda').APIGatewayProxyEventV2} event
  * @param {import('lambda-stream').ResponseStream} responseStream
  */
 async function handleEmbeddings(event, responseStream) {
-  /** @type {EmbeddingsRequest} */
+  /** @type {import('../utils/bedrock').EmbeddingsRequest} */
   const body = JSON.parse(event.body || '{}');
+
+  // Validate input
+  if (!body.input) {
+    throw Object.assign(new Error('input is required'), { statusCode: 400 });
+  }
+
+  // Validate encoding format
+  if (body.encoding_format && !['float', 'base64'].includes(body.encoding_format)) {
+    throw Object.assign(
+      new Error('encoding_format must be either "float" or "base64"'),
+      { statusCode: 400 }
+    );
+  }
+
   const modelId = body.model.startsWith('text-embedding-') ? DEFAULT_EMBEDDING_MODEL : body.model;
-  
-  const inputs = Array.isArray(body.input) ? body.input : [body.input];
+  const model = getEmbeddingsModel(modelId);
   
   try {
-    const command = new InvokeModelCommand({
-      modelId,
-      body: JSON.stringify({
-        texts: inputs,
-        input_type: 'search_document',
-        truncate: 'END'
-      }),
-      contentType: 'application/json',
-      accept: 'application/json'
+    const result = await model.embed({
+      ...body,
+      model: modelId
     });
-
-    const response = await client.send(command);
-    /** @type {EmbeddingsResponse} */
-    const result = JSON.parse(Buffer.from(response.body).toString());
 
     if (DEBUG) {
       console.log('Embeddings response:', JSON.stringify(result, null, 2));
     }
 
-    responseStream.write(JSON.stringify({
+    /** @type {EmbeddingsResponseBody} */
+    const response = {
       object: 'list',
       data: result.embeddings.map((embedding, index) => ({
         object: 'embedding',
-        embedding,
+        embedding: body.encoding_format === 'base64' 
+          ? Buffer.from(Float32Array.from(embedding).buffer)
+          : embedding,
         index
       })),
       model: modelId,
       usage: {
-        prompt_tokens: result.usage?.input_tokens || 0,
-        total_tokens: result.usage?.input_tokens || 0
+        prompt_tokens: result.usage.input_tokens,
+        total_tokens: result.usage.total_tokens
       }
-    }));
+    };
+
+    responseStream.write(JSON.stringify(response));
   } catch (err) {
     console.error('Error generating embeddings:', err);
-    throw Object.assign(new Error('Failed to generate embeddings'), { statusCode: 500 });
+    throw Object.assign(
+      new Error(err?.message || 'Failed to generate embeddings'),
+      { statusCode: err?.statusCode || 500 }
+    );
   }
 }
 

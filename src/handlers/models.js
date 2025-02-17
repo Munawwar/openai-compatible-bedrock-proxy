@@ -11,14 +11,14 @@ const DEBUG = process.env.DEBUG === 'true';
 async function handleModels(event, responseStream) {
   try {
     const response = await client.send(new ListFoundationModelsCommand({
-      byOutputModality: 'TEXT'
+      byOutputModality: 'TEXT',
+      byInferenceType: 'ON_DEMAND'
     }));
 
     const models = response.modelSummaries
       ?.filter(model => 
         model.responseStreamingSupported && 
-        model.modelLifecycle?.status === 'ACTIVE' &&
-        model.inferenceTypesSupported?.includes('ON_DEMAND')
+        model.modelLifecycle?.status === 'ACTIVE'
       )
       .map(model => ({
         id: model.modelId,

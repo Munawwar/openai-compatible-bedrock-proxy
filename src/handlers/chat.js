@@ -8,6 +8,21 @@ const { invokeModelNonStream, invokeModelStream } = require('../utils/bedrock');
 async function handleChat(event, responseStream) {
   const body = JSON.parse(event.body || '{}');
   
+  // Add validation for required fields
+  if (!body.messages || !Array.isArray(body.messages) || body.messages.length === 0) {
+    throw Object.assign(new Error('messages is required and must be a non-empty array'), { statusCode: 400 });
+  }
+
+  // Validate message format
+  for (const msg of body.messages) {
+    if (!msg.role || !msg.content) {
+      throw Object.assign(new Error('Each message must have role and content'), { statusCode: 400 });
+    }
+    if (!['user', 'assistant', 'system'].includes(msg.role)) {
+      throw Object.assign(new Error('Invalid message role'), { statusCode: 400 });
+    }
+  }
+  
   if (body.stream) {
     responseStream.setContentType('text/event-stream');
     const response = await invokeModelStream(body);
