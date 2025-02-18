@@ -1,7 +1,7 @@
 {
-  "name": "bedrock-access-gateway",
+  "name": "bedrock-access-gateway-node-lambda",
   "version": "1.0.0",
-  "description": "OpenAI-compatible RESTful APIs for Amazon Bedrock",
+  "description": "OpenAI-compatible RESTful APIs for Amazon Bedrock - minimal node.js lambda setup",
   "scripts": {
     "deploy": "cd cdk && npm run deploy",
     "build": "cd cdk && npm run build",

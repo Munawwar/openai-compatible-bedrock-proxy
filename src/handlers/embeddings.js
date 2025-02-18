@@ -69,6 +69,8 @@ async function handleEmbeddings(event, responseStream) {
     /** @type {EmbeddingsResponseBody} */
     const response = {
       object: 'list',
+      // FIXME: fix the types
+      // @ts-ignore
       data: result.embeddings.map((embedding, index) => ({
         object: 'embedding',
         embedding: body.encoding_format === 'base64' 
@@ -87,7 +89,9 @@ async function handleEmbeddings(event, responseStream) {
   } catch (err) {
     console.error('Error generating embeddings:', err);
     throw Object.assign(
+      // @ts-ignore
       new Error(err?.message || 'Failed to generate embeddings'),
+      // @ts-ignore
       { statusCode: err?.statusCode || 500 }
     );
   }

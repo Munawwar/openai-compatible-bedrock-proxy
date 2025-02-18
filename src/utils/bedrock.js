@@ -45,7 +45,7 @@ const SUPPORTED_BEDROCK_EMBEDDING_MODELS = {
  * @property {number} top_p
  * @property {string[]} [stop_sequences]
  * @property {Object[]} [tools]
- * @property {Array<{text: string}>} [system]
+ * @property {string} [system]
  */
 
 /**
@@ -67,18 +67,18 @@ const SUPPORTED_BEDROCK_EMBEDDING_MODELS = {
 /**
  * Extract system prompts from messages
  * @param {ChatMessage[]} messages 
- * @returns {Array<{text: string}>}
+ * @returns {string}
  */
-function parseSystemPrompts(messages) {
-  const systemPrompts = [];
+function parseSystemPrompt(messages) {
+  let systemPrompts = [];
   for (const msg of messages) {
     if (msg.role !== 'system') continue;
     if (typeof msg.content !== 'string') {
       throw Object.assign(new Error('System messages must have string content'), { statusCode: 400 });
     }
-    systemPrompts.push({ text: msg.content });
+    systemPrompts.push(msg.content);
   }
-  return systemPrompts;
+  return systemPrompts.join('\n\n');
 }
 
 /**
@@ -86,26 +86,28 @@ function parseSystemPrompts(messages) {
  * @returns {BedrockRequestBody}
  */
 function buildBody(request) {
-  const modelId = request.model.toLowerCase().startsWith('gpt-') ? DEFAULT_MODEL : request.model;
-  
   /** @type {BedrockRequestBody} */
   const body = {
-    messages: request.messages.map(msg => ({
-      role: msg.role,
-      content: Array.isArray(msg.content) ? msg.content : [{ type: 'text', text: msg.content }]
-    })),
+    messages: request.messages
+      .filter((msg) => msg.role !== 'system')
+      .map(msg => ({
+        role: msg.role,
+        content: Array.isArray(msg.content) ? msg.content : [{ type: 'text', text: msg.content }]
+      })),
     anthropic_version: 'bedrock-2023-05-31',
     max_tokens: request.max_tokens || 2048,
     temperature: request.temperature || 1.0,
     top_p: request.top_p || 1.0,
-    system: parseSystemPrompts(request.messages)
+    system: parseSystemPrompt(request.messages)
   };
 
+  // FIXME: untested
   // Add optional parameters
   if (request.stop) {
     body.stop_sequences = Array.isArray(request.stop) ? request.stop : [request.stop];
   }
 
+  // FIXME: untested
   // Add tools/functions support
   if (request.tools?.length) {
     body.tools = request.tools;
@@ -201,8 +203,10 @@ class BaseEmbeddingsModel {
     } catch (err) {
       console.error('Error invoking model:', err);
       throw Object.assign(
-        new Error(err.message || 'Failed to invoke model'),
-        { statusCode: err.statusCode || 500 }
+        // @ts-ignore
+        new Error(err?.message || 'Failed to invoke model'),
+        // @ts-ignore
+        { statusCode: err?.statusCode || 500 }
       );
     }
   }
@@ -216,6 +220,7 @@ class CohereEmbeddingsModel extends BaseEmbeddingsModel {
    * @param {EmbeddingsRequest} request
    */
   parseArgs(request) {
+    /** @type {string[] | number[] | number[][]} */
     let texts = [];
     if (typeof request.input === 'string') {
       texts = [request.input];
@@ -264,7 +269,8 @@ class CohereEmbeddingsModel extends BaseEmbeddingsModel {
  * @returns {CohereEmbeddingsModel}
  */
 function getEmbeddingsModel(modelId) {
-  const modelName = SUPPORTED_BEDROCK_EMBEDDING_MODELS[modelId];
+  const modelName = SUPPORTED_BEDROCK_EMBEDDING_MODELS[modelId] ||
+    SUPPORTED_BEDROCK_EMBEDDING_MODELS[modelId.split('.').slice(1).join('.')];
   if (!modelName) {
     throw Object.assign(
       new Error(`Unsupported embedding model: ${modelId}`),

@@ -38,7 +38,9 @@ Please make sure you have met below prerequisites:
 
 ### Architecture
 
-Uses an Lambda function with Function URL (with streaming support) to proxy requests to the Bedrock API. API key is stored in Secrets Manager - lambda caches the secret in-memory till AWS decides to recycle the instance.
+Uses a Lambda function with Function URL (with streaming support) to proxy requests to the Bedrock API.
+
+API key is stored in Secrets Manager - lambda caches the secret in-memory till AWS decides to recycle the instance.
 
 The CDK stack creates:
 - Lambda function with Function URL
@@ -117,7 +119,7 @@ curl https://<function-url>/api/v1/models \
   -H "Authorization: Bearer your-api-key"
 ```
 
-### Generate Embeddings
+### Generate Embeddings (Doesn't work at the moment)
 
 ```bash
 curl -X POST https://<function-url>/api/v1/embeddings \
