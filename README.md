@@ -1,8 +1,10 @@
-#  Bedrock Access Gateway - Lambda URL Fork
+#  Bedrock Access Gateway - Node.js Lambda Function URL
 
-OpenAI-compatible RESTful APIs for Amazon Bedrock
+OpenAI-compatible RESTful APIs with Amazon Bedrock.
 
-This is a port of AWS's code sample, but re-written from Python to JS without Docker, no ALB nor VPC, rather uses Lambda function URL (this saves costs) and uses CDK.
+Use case: You can use a more privacy-respecting Claude Sonnet on Cursor IDE chat without sending data to Anthropic. Also this gives pay-as-you-go pricing. Check [Amazon Bedrock](https://aws.amazon.com/bedrock) for pricing.
+
+This is a port of AWS's Python code sample, but re-written from Python to JS without Docker, ALB or VPC, rather uses Lambda function URL (this saves base costs) and uses CDK for deployment.
 
 ## Overview
 
@@ -18,10 +20,10 @@ If you find this GitHub repository useful, please consider giving it a free star
 - [x] Support streaming response via server-sent events (SSE)
 - [x] Support Model APIs
 - [x] Support Chat Completion APIs
-- [x] Support Tool Call (**new**)
-- [x] Support Embedding API (**new**)
-- [x] Support Multimodal API (**new**)
-- [x] Support Cross-Region Inference (**new**)
+- [x] Support Cross-Region Inference
+- [ ] Support Tool Call (future)
+- [ ] Support Embedding API (future)
+- [ ] Support Multimodal API (future)
 
 Please check [Usage Guide](./docs/Usage.md) for more details about how to use the new APIs.
 
@@ -48,7 +50,7 @@ The CDK stack creates:
 - IAM roles and policies for Lambda
 - Permissions for Bedrock access
 
-## How to Deploy
+### Deployment
 
 Prerequisites:
 ```sh
@@ -81,6 +83,8 @@ The deployment will output a Function URL. This is your API endpoint.
 
 Go to AWS Secrets Manager, find the secret named "BedrockProxyAPIKey" and retrieve secret - this is your API key.
 I recommend you change the secret to not have special characters which get's annoying with curl requests (use 32 characters alphanumeric characters at least).
+
+You can now use the API key and `https://<function-url>/api/v1` as OpenAI base URL in Cursor IDE ([Reference](https://kane.mx/posts/2024/cursor-meets-bedrock/)).
 
 ## Testing
 
@@ -140,6 +144,10 @@ The Lambda function uses these environment variables:
 - `DEBUG`: Enable debug logging (default: "false")
 
 These are set in the CDK stack and can be overridden during deployment.
+
+### Troubleshooting
+
+If you encounter any issues, please check the [Troubleshooting Guide](./docs/Troubleshooting.md) for more details.
 
 ### Local Development
 
