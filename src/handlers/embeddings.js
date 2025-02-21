@@ -1,7 +1,9 @@
 // @ts-check
 const { getEmbeddingsModel } = require('../utils/bedrock');
 
-const DEFAULT_EMBEDDING_MODEL = process.env.DEFAULT_EMBEDDING_MODEL || 'cohere.embed-multilingual-v3';
+const {
+  DEFAULT_EMBEDDING_MODEL = 'cohere.embed-multilingual-v3'
+} = process.env;
 const DEBUG = process.env.DEBUG === 'true';
 
 /**

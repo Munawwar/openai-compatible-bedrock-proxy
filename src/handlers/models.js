@@ -2,11 +2,12 @@
 const { BedrockClient, ListFoundationModelsCommand, ListInferenceProfilesCommand } = require('@aws-sdk/client-bedrock');
 
 const client = new BedrockClient();
+
 const {
-  DEBUG = "false",
   AWS_REGION= "us-west-2",
-  DEFAULT_MODEL = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
+  DEFAULT_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
 } = process.env;
+const DEBUG = process.env.DEBUG === 'true';
 
 function getInferenceRegionPrefix() {
   if (AWS_REGION.startsWith('ap-')) {
@@ -66,7 +67,7 @@ async function handleModels(event, responseStream) {
 
     // Fallback to default model if list is empty
     if (Object.keys(modelList).length === 0) {
-      modelList[DEFAULT_MODEL] = {
+      modelList[DEFAULT_MODEL_ID] = {
         modalities: ['TEXT', 'IMAGE']
       };
     }

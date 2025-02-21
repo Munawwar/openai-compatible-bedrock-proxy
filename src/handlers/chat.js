@@ -33,7 +33,10 @@ async function handleChat(event, responseStream) {
     if (response.body) {
       for await (const chunk of response.body) {
         const payload = JSON.parse(Buffer.from(chunk.chunk?.bytes || '').toString());
-        /* Example payload:
+        if (DEBUG) {
+          console.log('Bedrock response:', JSON.stringify(payload, null, 2));
+        }
+        /* Example anthropic payload:
           {
             "type": "message_start",
             "message": {

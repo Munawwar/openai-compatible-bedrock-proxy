@@ -3,8 +3,10 @@ const { BedrockRuntimeClient, InvokeModelCommand, InvokeModelWithResponseStreamC
 
 const client = new BedrockRuntimeClient();
 
-const DEFAULT_MODEL = process.env.DEFAULT_MODEL_ID || 'us.anthropic.claude-3-5-sonnet-20241022-v2:0';
 const DEBUG = process.env.DEBUG === 'true';
+const {
+  DEFAULT_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
+} = process.env;
 
 /**
  * @type {Record<string, string>}
@@ -37,7 +39,7 @@ const SUPPORTED_BEDROCK_EMBEDDING_MODELS = {
  */
 
 /**
- * @typedef {Object} BedrockRequestBody
+ * @typedef {Object} BedrockRequestBodyAnthropic
  * @property {Array<{role: string, content: Array<{type: string, text?: string, [key: string]: any}>}>} messages
  * @property {string} anthropic_version
  * @property {number} max_tokens
@@ -46,6 +48,9 @@ const SUPPORTED_BEDROCK_EMBEDDING_MODELS = {
  * @property {string[]} [stop_sequences]
  * @property {Object[]} [tools]
  * @property {string} [system]
+ */
+/**
+ * @typedef {BedrockRequestBodyAnthropic} BedrockRequestBody
  */
 
 /**
@@ -83,9 +88,21 @@ function parseSystemPrompt(messages) {
 
 /**
  * @param {ChatRequest} request
+ */
+function getModelId(request) {
+  const { model = DEFAULT_MODEL_ID } = request;
+  if (model.toLowerCase().startsWith('gpt-')) {
+    return DEFAULT_MODEL_ID;
+  }
+  return model;
+}
+
+/**
+ * @param {ChatRequest} request
+ * @param {string} modelId
  * @returns {BedrockRequestBody}
  */
-function buildBody(request) {
+function buildBody(request, modelId) {
   /** @type {BedrockRequestBody} */
   const body = {
     messages: request.messages
@@ -100,14 +117,11 @@ function buildBody(request) {
     top_p: request.top_p || 1.0,
     system: parseSystemPrompt(request.messages)
   };
-
   // FIXME: untested
   // Add optional parameters
   if (request.stop) {
     body.stop_sequences = Array.isArray(request.stop) ? request.stop : [request.stop];
   }
-
-  // FIXME: untested
   // Add tools/functions support
   if (request.tools?.length) {
     body.tools = request.tools;
@@ -124,13 +138,15 @@ function buildBody(request) {
  * @param {ChatRequest} request
  */
 function invokeModelNonStream(request) {
-  const modelId = request.model.toLowerCase().startsWith('gpt-') ? DEFAULT_MODEL : request.model;
-  const body = buildBody(request);
+  const modelId = getModelId(request);
+  const body = buildBody(request, modelId);
 
   if (DEBUG) {
     console.log('Non-stream request:', {
       modelId,
-      body: JSON.stringify(body, null, 2)
+      contentType: 'application/json',
+      accept: 'application/json',
+      body: JSON.stringify(body, null, 2),
     });
   }
 
@@ -138,7 +154,7 @@ function invokeModelNonStream(request) {
     modelId,
     body: JSON.stringify(body),
     contentType: 'application/json',
-    accept: 'application/json'
+    accept: 'application/json',
   }));
 }
 
@@ -146,13 +162,15 @@ function invokeModelNonStream(request) {
  * @param {ChatRequest} request
  */
 function invokeModelStream(request) {
-  const modelId = request.model.toLowerCase().startsWith('gpt-') ? DEFAULT_MODEL : request.model;
-  const body = buildBody(request);
+  const modelId = getModelId(request);
+  const body = buildBody(request, modelId);
 
   if (DEBUG) {
     console.log('Stream request:', {
       modelId,
-      body: JSON.stringify(body, null, 2)
+      contentType: 'application/json',
+      accept: 'application/json',
+      body: JSON.stringify(body, null, 2),
     });
   }
 
@@ -160,7 +178,7 @@ function invokeModelStream(request) {
     modelId,
     body: JSON.stringify(body),
     contentType: 'application/json',
-    accept: 'application/json'
+    accept: 'application/json',
   }));
 }
 

@@ -21,7 +21,7 @@ If you find this GitHub repository useful, please consider giving it a free star
 - [x] Support Model APIs
 - [x] Support Chat Completion APIs
 - [x] Support Cross-Region Inference
-- [ ] Support Tool Call (future)
+- [x] Support Tool Call
 - [ ] Support Embedding API (future)
 - [ ] Support Multimodal API (future)
 
@@ -54,8 +54,11 @@ The CDK stack creates:
 
 Prerequisites:
 ```sh
+# Get node.js 22. I recommend via `fnn` node version manager
+# fnm install 22
 npm install -g aws-cdk@^2.178.2
 npm install
+# or if you want exact version from package-lock.json, then use `npm ci`
 ```
 
 You need to have your credentials in `~/.aws/credentials`.
@@ -97,7 +100,7 @@ curl -X POST https://<function-url>/api/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer your-api-key" \
   -d '{
-    "model": "anthropic.claude-3-sonnet-20240229-v1:0",
+    "model": "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
     "messages": [{"role": "user", "content": "Hello!"}]
   }'
 ```
@@ -110,7 +113,7 @@ curl -X POST https://<function-url>/api/v1/chat/completions \
   -H "Authorization: Bearer your-api-key" \
   --no-buffer \
   -d '{
-    "model": "anthropic.claude-3-sonnet-20240229-v1:0",
+    "model": "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
     "messages": [{"role": "user", "content": "Hello!"}],
     "stream": true
   }'
@@ -139,7 +142,7 @@ curl -X POST https://<function-url>/api/v1/embeddings \
 
 The Lambda function uses these environment variables:
 
-- `DEFAULT_MODEL_ID`: Default model to use (default: "anthropic.claude-3-sonnet-20240229-v1:0")
+- `DEFAULT_MODEL_ID`: Default model to use (default: "us.anthropic.claude-3-5-sonnet-20241022-v2:0")
 - `DEFAULT_EMBEDDING_MODEL`: Default embedding model (default: "cohere.embed-multilingual-v3")
 - `DEBUG`: Enable debug logging (default: "false")
 
