@@ -1,6 +1,6 @@
-#  Bedrock Access Gateway - Node.js Lambda Function URL
+#  OpenAI-compatible AWS Bedrock Proxy
 
-OpenAI-compatible RESTful APIs with Amazon Bedrock.
+OpenAI-compatible RESTful APIs with Amazon Bedrock - using Node.js and Lambda Function URL SSE streaming
 
 Use case: You can use a more privacy-respecting Claude Sonnet on Cursor IDE chat without sending data to Anthropic. Also this gives pay-as-you-go pricing. Check [Amazon Bedrock](https://aws.amazon.com/bedrock) for pricing.
 
