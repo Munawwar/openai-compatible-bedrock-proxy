@@ -4,7 +4,7 @@ OpenAI-compatible RESTful APIs with Amazon Bedrock - using Node.js and Lambda Fu
 
 Use case: You can use a more privacy-respecting Claude Sonnet on Cursor IDE chat without sending data to Anthropic. Also this gives pay-as-you-go pricing. Check [Amazon Bedrock](https://aws.amazon.com/bedrock) for pricing.
 
-This is a port of AWS's Python code sample, but re-written from Python to JS without Docker, ALB or VPC, rather uses Lambda function URL (this saves base costs) and uses CDK for deployment.
+This is a port of [AWS's Python code sample](https://github.com/aws-samples/bedrock-access-gateway), but re-written from Python to JS without Docker, ALB or VPC, rather uses Lambda function URL (this saves base costs) and uses CDK for deployment.
 
 ## Overview
 
