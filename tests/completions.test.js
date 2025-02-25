@@ -48,7 +48,7 @@ const event = {
 
   // This is a simple example body to test on:
   // "body": JSON.stringify({
-  //     "model": "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
+  //     "model": "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
   //     "messages": [{"role": "user", "content": "Hello!"}]
   // }),
 

@@ -5,7 +5,7 @@ const client = new BedrockClient();
 
 const {
   AWS_REGION= "us-west-2",
-  DEFAULT_MODEL_ID = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
+  DEFAULT_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0',
 } = process.env;
 const DEBUG = process.env.DEBUG === 'true';
 
