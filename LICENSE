@@ -19,3 +19,9 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+------------
+
+This work is a port/derivation of Amazon's Bedrock Access Gateway: https://github.com/aws-samples/bedrock-access-gateway
+
+The original is licensed under the MIT-No-Attribution license (https://github.com/aws-samples/bedrock-access-gateway/blob/b26ee3e9eaea5547a724bf37dd1e33017295cc8a/LICENSE)
