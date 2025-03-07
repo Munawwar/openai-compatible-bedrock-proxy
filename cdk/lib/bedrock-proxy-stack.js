@@ -34,6 +34,16 @@ class BedrockProxyStack extends Stack {
         API_KEY_SECRET_ARN: apiKeySecret.secretArn,
         DEFAULT_MODEL_ID: 'us.anthropic.claude-3-7-sonnet-20250219-v1:0',
         DEBUG: 'false'
+      },
+      // Include node_modules in the deployment package
+      bundling: {
+        nodeModules: [
+          '@aws-sdk/client-bedrock-runtime',
+          '@aws-sdk/client-bedrock',
+          '@aws-sdk/client-secrets-manager'
+        ],
+        externalModules: [],
+        forceDockerBundling: false
       }
     });
 
@@ -43,7 +53,8 @@ class BedrockProxyStack extends Stack {
       actions: [
         'bedrock:InvokeModel',
         'bedrock:InvokeModelWithResponseStream',
-        'bedrock:ListFoundationModels'
+        'bedrock:ListFoundationModels',
+        'bedrock:ListInferenceProfiles'
       ],
       resources: ['*']
     }));
