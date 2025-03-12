@@ -6,6 +6,7 @@ const client = new BedrockRuntimeClient();
 const DEBUG = process.env.DEBUG === 'true';
 const {
   DEFAULT_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0',
+  DEFAULT_MODEL_ID_MINI = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
 } = process.env;
 
 /**
@@ -91,8 +92,9 @@ function parseSystemPrompt(messages) {
  */
 function getModelId(request) {
   const { model = DEFAULT_MODEL_ID } = request;
-  if (model.toLowerCase().startsWith('gpt-')) {
-    return DEFAULT_MODEL_ID;
+  const modelLower = model.toLowerCase();
+  if (modelLower.startsWith('gpt-')) {
+    return modelLower.includes('mini') ? DEFAULT_MODEL_ID_MINI : DEFAULT_MODEL_ID;
   }
   return model;
 }

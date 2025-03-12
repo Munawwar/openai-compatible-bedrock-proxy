@@ -143,6 +143,7 @@ curl -X POST https://<function-url>/api/v1/embeddings \
 The Lambda function uses these environment variables:
 
 - `DEFAULT_MODEL_ID`: Default model to use (default: "us.anthropic.claude-3-7-sonnet-20250219-v1:0")
+- `DEFAULT_MODEL_ID_MINI`: Default mini model to use (default: "us.anthropic.claude-3-5-sonnet-20241022-v2:0")
 - `DEFAULT_EMBEDDING_MODEL`: Default embedding model (default: "cohere.embed-multilingual-v3")
 - `DEBUG`: Enable debug logging (default: "false")
 

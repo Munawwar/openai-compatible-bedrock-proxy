@@ -6,6 +6,7 @@ const client = new BedrockClient();
 const {
   AWS_REGION= "us-west-2",
   DEFAULT_MODEL_ID = 'us.anthropic.claude-3-7-sonnet-20250219-v1:0',
+  DEFAULT_MODEL_ID_MINI = 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
 } = process.env;
 const DEBUG = process.env.DEBUG === 'true';
 
@@ -68,6 +69,9 @@ async function handleModels(event, responseStream) {
     // Fallback to default model if list is empty
     if (Object.keys(modelList).length === 0) {
       modelList[DEFAULT_MODEL_ID] = {
+        modalities: ['TEXT', 'IMAGE']
+      };
+      modelList[DEFAULT_MODEL_ID_MINI] = {
         modalities: ['TEXT', 'IMAGE']
       };
     }

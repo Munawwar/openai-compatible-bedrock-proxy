@@ -33,6 +33,7 @@ class BedrockProxyStack extends Stack {
       environment: {
         API_KEY_SECRET_ARN: apiKeySecret.secretArn,
         DEFAULT_MODEL_ID: 'us.anthropic.claude-3-7-sonnet-20250219-v1:0',
+        DEFAULT_MODEL_ID_MINI: 'us.anthropic.claude-3-5-sonnet-20241022-v2:0',
         DEBUG: 'false'
       },
       // Include node_modules in the deployment package
